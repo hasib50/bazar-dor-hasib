@@ -30,12 +30,16 @@ export function Hero() {
   return (
     <section className="container-page pt-5 sm:pt-7">
       <div className="relative isolate overflow-hidden rounded-3xl border border-[#e0eadc] bg-gradient-to-br from-[#f5faf1] via-white to-[#edf6e9] shadow-sm">
-        {/* Decorative background */}
+
+{/* Decorative background */}
+
         <div className="pointer-events-none absolute -right-16 -top-20 -z-10 size-64 rounded-full bg-green-100/60 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-24 left-1/3 -z-10 size-56 rounded-full bg-lime-100/40 blur-3xl" />
 
         <div className="grid items-center gap-5 px-5 py-7 sm:px-8 sm:py-9 lg:grid-cols-[1.1fr_0.9fr] lg:gap-8 lg:px-10 lg:py-10">
-          {/* Left content */}
+
+{/* Left content */}
+
           <div className="relative z-10">
             <span className="inline-flex items-center gap-2 rounded-full border border-green-200 bg-white/85 px-3.5 py-2 text-xs font-bold text-green-800 shadow-sm sm:text-sm">
               <span className="size-2 rounded-full bg-green-600" />
@@ -70,7 +74,8 @@ export function Hero() {
             </div>
           </div>
 
-          {/* Right banner image */}
+{/* Right banner image */}
+
           <div className="relative mx-auto flex w-full max-w-[480px] items-center justify-center lg:max-w-none">
             <div className="absolute inset-8 rounded-full bg-green-200/30 blur-2xl" />
 

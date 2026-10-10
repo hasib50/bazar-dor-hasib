@@ -11,7 +11,8 @@ export function ProductCard({ product }: { product: Product }) {
       href={`/product/${product.slug}`}
       className="group block overflow-hidden rounded-2xl border border-[#e6ece5] bg-white p-4 transition-all duration-200 hover:-translate-y-1 hover:border-[#c9ddc9] hover:shadow-lg sm:p-5"
     >
-      {/* Product information */}
+
+{/* Product information */}
       <div className="flex items-center gap-3">
         <div className="grid size-14 shrink-0 place-items-center rounded-2xl bg-[#f3f8f1] text-3xl transition-colors group-hover:bg-[#e8f3e5]">
           {product.icon}
@@ -39,7 +40,8 @@ export function ProductCard({ product }: { product: Product }) {
         </span>
       </div>
 
-      {/* Price information */}
+
+{/* Price information */}
       <div className="mt-5 pt-4">
         <div className="flex items-end justify-between gap-3">
           <div className="min-w-0">
