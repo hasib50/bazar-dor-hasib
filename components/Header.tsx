@@ -51,10 +51,14 @@ export function Header() {
 
     const controller = new AbortController();
 
-    fetch(
-      "https://api.api-store.workers.dev/api/bazardor/products",
-      { signal: controller.signal }
-    )
+    
+
+fetch(
+  "https://api.abcz.workers.dev/api/bazardor/products",
+  { signal: controller.signal }
+)
+
+
       .then((response) => {
         if (!response.ok) {
           throw new Error("Market data unavailable");
