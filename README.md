@@ -1,61 +1,51 @@
-# 🛒 বাজার দর — BazarDor
+# 🛒 BazarDor (বাজার দর)
 
-**বাজার দর** is a responsive Next.js web application for checking current prices of essential products in Bangladesh. It shows product prices, percentage changes, category-based lists, market-wise details and user authentication in one place.
+**BazarDor** is a user-friendly web application designed to help users explore product prices and make informed shopping decisions. It provides a convenient platform for accessing market price information through a simple and intuitive interface.
 
-## Technologies
+## 🚀 Technologies Used
 
-- Next.js App Router
-- TypeScript
-- Tailwind CSS + DaisyUI
-- Better Auth
-- PostgreSQL
-- React Hot Toast
-- REST API
+- React.js
+- TypeScript / JavaScript
+- Tailwind CSS
+- Firebase Authentication
+- Node.js and Express.js
+- MongoDB
+- React Router
 
-## Key Features
+*Update this technology list according to the technologies actually used in your project.*
 
-1. Responsive home page with price ticker and product sections.
-2. Category pages with numeric price sorting.
-3. Protected product detail pages with market-wise price tables.
-4. Better Auth email/password + Google/GitHub social login support.
-5. User profile and profile-name update feature.
-6. Loading skeletons, toast messages and custom 404 page.
-7. Vercel-friendly dynamic App Router routes.
+## ✨ Key Features
 
-## API
+1. **Market Price Information** — Explore product prices to make better purchasing decisions.
+2. **User Authentication** — Register and log in securely to access user-specific features.
+3. **My Profile** — View your profile information in a dedicated route.
+4. **Update Profile Information** — Update your profile name through a separate form.
+5. **Responsive Design** — Enjoy a user-friendly experience across desktop, tablet, and mobile devices.
 
-Primary API: `https://api.api-store.workers.dev/api/bazardor`
+## 🛠️ Installation and Setup
 
-Alternative API: `https://api.abcz.workers.dev/api/bazardor`
+1. Clone the repository:
+   ```bash
+   git clone YOUR_GITHUB_REPOSITORY_URL
+   ```
 
-## Local Setup
+2. Navigate to the project directory:
+   ```bash
+   cd YOUR_PROJECT_FOLDER
+   ```
 
-```bash
-npm install
-cp .env.example .env.local
-```
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-Add your PostgreSQL connection and Better Auth secret to `.env.local`.
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
 
-Generate/migrate the Better Auth tables:
+## 👨‍💻 Author
 
-```bash
-npm run auth:migrate
-```
+**Md. Al Hasib**
 
-Then start the app:
-
-```bash
-npm run dev
-```
-
-Open `http://localhost:3000`.
-
-## OAuth Redirect URLs
-
-For local development use:
-
-- Google: `http://localhost:3000/api/auth/callback/google`
-- GitHub: `http://localhost:3000/api/auth/callback/github`
-
-For production, replace the domain with your deployed Vercel URL.
+GitHub: [hasib50](https://github.com/hasib50)

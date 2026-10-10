@@ -1,7 +1,7 @@
 import type { Category, MarketPrice, Product } from "@/types";
 import { parseNumber, slugify } from "@/lib/utils";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://api.abcz.workers.dev/api/bazardor";
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://openapi.programming-hero.com/api/bazardor";
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE_URL}${path}`, {

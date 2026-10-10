@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -32,6 +31,79 @@ function todayBn() {
   }).format(new Date());
 }
 
+type ApiProduct = {
+  id?: string | number;
+  _id?: string;
+  nameBn?: string;
+  name?: string;
+  title?: string;
+  slug?: string;
+  category?: string | { slug?: string; name?: string };
+  unit?: string;
+  today?: number | string;
+  price?: number | string;
+  todayPrice?: number | string;
+  change?: number | string | { pct?: number | string };
+  percentageChange?: number | string;
+  changePercent?: number | string;
+  image?: string;
+  categoryIcon?: string;
+  icon?: string;
+  emoji?: string;
+};
+
+function extractProducts(payload: unknown): ApiProduct[] {
+  // Some APIs return the array directly; others wrap it in an object.
+  if (Array.isArray(payload)) {
+    return payload as ApiProduct[];
+  }
+
+  if (!payload || typeof payload !== "object") {
+    return [];
+  }
+
+  const data = payload as Record<string, unknown>;
+
+  for (const key of ["data", "products", "items", "results"]) {
+    const value = data[key];
+
+    if (Array.isArray(value)) {
+      return value as ApiProduct[];
+    }
+
+    // Some APIs use { data: { products: [...] } }.
+    if (value && typeof value === "object") {
+      const nested = value as Record<string, unknown>;
+
+      for (const nestedKey of [
+        "products",
+        "items",
+        "results",
+        "data",
+      ]) {
+        if (Array.isArray(nested[nestedKey])) {
+          return nested[nestedKey] as ApiProduct[];
+        }
+      }
+    }
+  }
+
+  return [];
+}
+
+function toNumber(value: unknown): number {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value;
+  }
+
+  if (typeof value === "string") {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+
+  return 0;
+}
+
 export function Header() {
   const pathname = usePathname();
   const router = useRouter();
@@ -57,60 +129,98 @@ export function Header() {
 
     getCategories()
       .then((items) => {
-        if (items.length) {
+        if (items.length && !controller.signal.aborted) {
           setCategories(items);
         }
       })
-      .catch(() => undefined);
+      .catch((error) => {
+        if (!controller.signal.aborted) {
+          console.error("Failed to load categories:", error);
+        }
+      });
 
     async function loadMarketPrices() {
       try {
+        const apiUrl =
+          process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/+$/, "");
+
+        if (!apiUrl) {
+          console.error(
+            "Market API URL is missing. Check NEXT_PUBLIC_API_BASE_URL."
+          );
+          return;
+        }
+
+        /*
+         * IMPORTANT:
+         * Set NEXT_PUBLIC_API_BASE_URL to the actual API endpoint
+         * that provides the market-price data.
+         */
         const response = await fetch(
-          "https://api.abcz.workers.dev/api/bazardor/products",
-          { signal: controller.signal }
-        );
+  "https://openapi.programming-hero.com/api/bazardor/products",
+  {
+    signal: controller.signal,
+    headers: {
+      Accept: "application/json",
+    },
+    cache: "no-store",
+  }
+);
 
         if (!response.ok) {
           throw new Error(`Market API error: ${response.status}`);
         }
 
-        const payload = await response.json();
+        const payload: unknown = await response.json();
+        console.log("Market API URL:", apiUrl);
+        console.log("HTTP status:", response.status);
+        console.log("Raw API payload:", JSON.stringify(payload, null, 2));
 
-        const raw =
-          payload?.data ??
-          payload?.products ??
-          payload?.items ??
-          payload;
+        const raw = extractProducts(payload);
 
-        if (!Array.isArray(raw)) {
-          throw new Error("Invalid market API response");
+        if (raw.length === 0) {
+          console.error(
+            "Market API returned no recognizable product array:",
+            payload
+          );
+          setTicker([]);
+          return;
         }
 
-        const products: Product[] = raw
-          .slice(0, 12)
-          .map((p: any, index: number) => ({
-            id: p?.id ?? index,
-            name: p?.nameBn ?? p?.name ?? p?.title ?? "পণ্য",
-            slug: p?.slug ?? String(p?.id ?? index),
-            category: p?.category ?? "other",
-            unit: p?.unit ?? "প্রতি কেজি",
-            price: Number(
-              p?.today ?? p?.price ?? p?.todayPrice ?? 0
-            ),
-            change: Number(
-              p?.change?.pct ??
-                p?.change ??
-                p?.percentageChange ??
-                p?.changePercent ??
+        const products: Product[] = raw.slice(0, 12).map((p, index) => {
+          const id = p.id ?? p._id ?? index;
+
+          const category =
+            typeof p.category === "string"
+              ? p.category
+              : p.category?.slug ?? p.category?.name ?? "other";
+
+          const changeValue =
+            typeof p.change === "object" && p.change !== null
+              ? p.change.pct
+              : p.change;
+
+          return {
+            id,
+            name: p.nameBn ?? p.name ?? p.title ?? "পণ্য",
+            slug: p.slug ?? String(id),
+            category,
+            unit: p.unit ?? "প্রতি কেজি",
+            price: toNumber(p.today ?? p.todayPrice ?? p.price),
+            change: toNumber(
+              changeValue ??
+                p.percentageChange ??
+                p.changePercent ??
                 0
             ),
             icon:
-              p?.image ??
-              p?.categoryIcon ??
-              p?.icon ??
-              p?.emoji ??
+              p.image ??
+              p.categoryIcon ??
+              p.icon ??
+              p.emoji ??
               "🛒",
-          }));
+          } as Product;
+        });
 
         if (!controller.signal.aborted) {
           setTicker(products);
@@ -121,6 +231,7 @@ export function Header() {
           error.name !== "AbortError"
         ) {
           console.error("Failed to load market prices:", error);
+          setTicker([]);
         }
       }
     }
@@ -369,7 +480,7 @@ export function Header() {
           </div>
         ) : (
           <div className="py-2.5 text-center text-xs text-slate-500">
-            আজকের বাজার দর লোড হচ্ছে...
+            আজকের বাজার দর আপাতত পাওয়া যাচ্ছে না।
           </div>
         )}
       </div>
