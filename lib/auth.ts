@@ -1,69 +1,60 @@
+
 import { betterAuth } from "better-auth";
-import { Pool } from "pg";
-import Database from "better-sqlite3";
+import { mongodbAdapter } from "@better-auth/mongo-adapter";
+import clientPromise from "@/lib/mongodb";
+
+const authSecret = process.env.BETTER_AUTH_SECRET;
+
+if (!authSecret) {
+  throw new Error("BETTER_AUTH_SECRET is missing");
+}
 
 const socialProviders = {
   ...(process.env.GOOGLE_CLIENT_ID &&
   process.env.GOOGLE_CLIENT_SECRET
     ? {
         google: {
-          clientId: process.env.GOOGLE_CLIENT_ID as string,
-          clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+          clientId: process.env.GOOGLE_CLIENT_ID,
+          clientSecret: process.env.GOOGLE_CLIENT_SECRET,
         },
       }
     : {}),
-
   ...(process.env.GITHUB_CLIENT_ID &&
   process.env.GITHUB_CLIENT_SECRET
     ? {
         github: {
-          clientId: process.env.GITHUB_CLIENT_ID as string,
-          clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+          clientId: process.env.GITHUB_CLIENT_ID,
+          clientSecret: process.env.GITHUB_CLIENT_SECRET,
           scope: ["user:email"],
         },
       }
     : {}),
 };
 
-// Local development: SQLite
-// Production: PostgreSQL through DATABASE_URL
-const database = process.env.DATABASE_URL
-  ? new Pool({
-      connectionString: process.env.DATABASE_URL,
-    })
-  : new Database("./database.sqlite");
+const client = await clientPromise;
+const db = client.db();
 
 export const auth = betterAuth({
-  database,
-
+  appName: "Bazar-Dor",
+  database: mongodbAdapter(db, { client }),
+  secret: authSecret,
   baseURL:
     process.env.BETTER_AUTH_URL ||
-    "http://localhost:3001",
-
+    "http://localhost:3000",
   trustedOrigins: [
-    "http://localhost:3001",
-    "http://127.0.0.1:3001",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://bazar-dor-hasib.vercel.app",
   ],
-
-  secret:
-    process.env.BETTER_AUTH_SECRET ||
-    "local-development-secret-change-in-production",
-
   emailAndPassword: {
     enabled: true,
+    minPasswordLength: 8,
   },
-
   socialProviders,
-
   account: {
     accountLinking: {
       enabled: true,
       trustedProviders: ["google", "github"],
     },
   },
-
-  user: {
-    additionalFields: {},
-  },
 });
-
