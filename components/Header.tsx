@@ -1,9 +1,11 @@
+
 "use client";
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
+
 import { authClient } from "@/lib/auth-client";
 import { getCategories } from "@/lib/api";
 import type { Category, Product } from "@/types";
@@ -33,8 +35,10 @@ function todayBn() {
 export function Header() {
   const pathname = usePathname();
   const router = useRouter();
+
   const { data: session, isPending } = authClient.useSession();
 
+  const [dateText, setDateText] = useState("");
   const [categories, setCategories] =
     useState<Category[]>(fallbackCategories);
   const [ticker, setTicker] = useState<Product[]>([]);
@@ -42,75 +46,98 @@ export function Header() {
 
   const menuRef = useRef<HTMLDivElement>(null);
 
+  // Render the date after mounting to prevent hydration mismatch.
   useEffect(() => {
+    setDateText(todayBn());
+  }, []);
+
+  // Load categories and market prices.
+  useEffect(() => {
+    const controller = new AbortController();
+
     getCategories()
       .then((items) => {
-        if (items.length) setCategories(items);
+        if (items.length) {
+          setCategories(items);
+        }
       })
       .catch(() => undefined);
 
-    const controller = new AbortController();
+    async function loadMarketPrices() {
+      try {
+        const response = await fetch(
+          "https://api.abcz.workers.dev/api/bazardor/products",
+          { signal: controller.signal }
+        );
 
-    
-
-fetch(
-  "https://api.abcz.workers.dev/api/bazardor/products",
-  { signal: controller.signal }
-)
-
-
-      .then((response) => {
         if (!response.ok) {
-          throw new Error("Market data unavailable");
+          throw new Error(`Market API error: ${response.status}`);
         }
-        return response.json();
-      })
-      .then((payload) => {
+
+        const payload = await response.json();
+
         const raw =
           payload?.data ??
           payload?.products ??
           payload?.items ??
           payload;
 
-        if (Array.isArray(raw)) {
-          setTicker(
-            raw.slice(0, 12).map((p: any, index: number) => ({
-              id: p?.id ?? index,
-              name: p?.nameBn ?? p?.name ?? p?.title ?? "পণ্য",
-              slug: p?.slug ?? String(p?.id ?? index),
-              category: p?.category ?? "other",
-              unit: p?.unit ?? "প্রতি কেজি",
-              price: Number(
-                p?.today ?? p?.price ?? p?.todayPrice ?? 0
-              ),
-              change: Number(
-                p?.change?.pct ??
-                  p?.change ??
-                  p?.percentageChange ??
-                  p?.changePercent ??
-                  0
-              ),
-              icon:
-                p?.image ??
-                p?.categoryIcon ??
-                p?.icon ??
-                p?.emoji ??
-                "🛒",
-            }))
-          );
+        if (!Array.isArray(raw)) {
+          throw new Error("Invalid market API response");
         }
-      })
-      .catch(() => undefined);
+
+        const products: Product[] = raw
+          .slice(0, 12)
+          .map((p: any, index: number) => ({
+            id: p?.id ?? index,
+            name: p?.nameBn ?? p?.name ?? p?.title ?? "পণ্য",
+            slug: p?.slug ?? String(p?.id ?? index),
+            category: p?.category ?? "other",
+            unit: p?.unit ?? "প্রতি কেজি",
+            price: Number(
+              p?.today ?? p?.price ?? p?.todayPrice ?? 0
+            ),
+            change: Number(
+              p?.change?.pct ??
+                p?.change ??
+                p?.percentageChange ??
+                p?.changePercent ??
+                0
+            ),
+            icon:
+              p?.image ??
+              p?.categoryIcon ??
+              p?.icon ??
+              p?.emoji ??
+              "🛒",
+          }));
+
+        if (!controller.signal.aborted) {
+          setTicker(products);
+        }
+      } catch (error) {
+        if (
+          error instanceof Error &&
+          error.name !== "AbortError"
+        ) {
+          console.error("Failed to load market prices:", error);
+        }
+      }
+    }
+
+    loadMarketPrices();
 
     return () => controller.abort();
   }, []);
 
+  // Close the mobile/account menu when navigating.
   useEffect(() => {
     setMenu(false);
   }, [pathname]);
 
+  // Close the account menu when clicking outside.
   useEffect(() => {
-    function handleOutsideClick(event: Event) {
+    function handleOutsideClick(event: MouseEvent | TouchEvent) {
       if (
         menuRef.current &&
         !menuRef.current.contains(event.target as Node)
@@ -133,8 +160,10 @@ fetch(
   async function logout() {
     try {
       await authClient.signOut();
+
       setMenu(false);
       toast.success("সফলভাবে সাইন আউট হয়েছে");
+
       router.push("/");
       router.refresh();
     } catch {
@@ -167,7 +196,7 @@ fetch(
             </span>
 
             <span className="mt-1 block max-w-47.5 truncate text-[10px] font-medium text-slate-500 sm:max-w-none sm:text-xs">
-              {todayBn()}
+              {dateText || "\u00A0"}
             </span>
           </span>
         </Link>
@@ -219,6 +248,7 @@ fetch(
                     <p className="truncate text-sm font-bold text-[#263329]">
                       {session.user.name || "ব্যবহারকারী"}
                     </p>
+
                     <p className="mt-1 truncate text-xs text-slate-500">
                       {session.user.email}
                     </p>
@@ -306,7 +336,7 @@ fetch(
 
       {/* Scrolling market price ticker */}
       <div className="overflow-hidden border-t border-[#e7ece5] bg-[#f8faf7]">
-        {doubled.length ? (
+        {doubled.length > 0 ? (
           <div className="ticker-track flex w-max">
             {doubled.map((product, index) => (
               <Link
