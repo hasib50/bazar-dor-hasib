@@ -83,11 +83,11 @@ export default async function CategoryPage({
 
 {/* Category header */}
 
-      <section className="relative mb-6 overflow-hidden rounded-3xl border border-[#e4ece1] bg-gradient-to-br from-white via-white to-[#f0f7ed] p-5 shadow-sm sm:p-7">
+      <section className="relative mb-6 overflow-hidden rounded-3xl border border-[#e4ece1] bg-linear-to-br from-white via-white to-[#f0f7ed] p-5 shadow-sm sm:p-7">
         <div className="pointer-events-none absolute -right-10 -top-12 size-40 rounded-full bg-[#dcebd5]/40 blur-2xl" />
 
         <div className="relative flex items-center gap-4 sm:gap-5">
-          <div className="grid size-16 shrink-0 place-items-center rounded-2xl border border-[#e1ebdd] bg-white text-4xl shadow-sm sm:size-[76px] sm:text-5xl">
+          <div className="grid size-16 shrink-0 place-items-center rounded-2xl border border-[#e1ebdd] bg-white text-4xl shadow-sm sm:size-19 sm:text-5xl">
             {category?.icon ?? "📦"}
           </div>
 
@@ -96,7 +96,7 @@ export default async function CategoryPage({
               পণ্যের ক্যাটাগরি
             </p>
 
-            <h1 className="break-words text-2xl font-extrabold tracking-tight text-[#263329] sm:text-3xl">
+            <h1 className="wrap-break-word text-2xl font-extrabold tracking-tight text-[#263329] sm:text-3xl">
               {categoryName}
             </h1>
 
