@@ -29,7 +29,7 @@ export function Hero() {
 
   return (
     <section className="container-page pt-5 sm:pt-7">
-      <div className="relative isolate overflow-hidden rounded-3xl border border-[#e0eadc] bg-gradient-to-br from-[#f5faf1] via-white to-[#edf6e9] shadow-sm">
+      <div className="relative isolate overflow-hidden rounded-3xl border border-[#e0eadc] bg-linear-to-br from-[#f5faf1] via-white to-[#edf6e9] shadow-sm">
 
 {/* Decorative background */}
 

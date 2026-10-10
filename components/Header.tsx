@@ -148,12 +148,12 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-[#e3eae1] bg-white/95 shadow-[0_2px_12px_rgba(30,50,30,0.04)] backdrop-blur-xl">
       {/* Brand and account */}
-      <div className="container-page flex min-h-[72px] items-center justify-between gap-3 sm:min-h-[80px] sm:gap-5">
+      <div className="container-page flex min-h-18 items-center justify-between gap-3 sm:min-h-20 sm:gap-5">
         <Link
           href="/"
           className="group flex min-w-0 shrink-0 items-center gap-2.5 sm:gap-3"
         >
-          <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-green-600 to-green-800 text-2xl text-white shadow-md shadow-green-900/15 transition-transform group-hover:scale-105 sm:size-12">
+          <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-linear-to-br from-green-600 to-green-800 text-2xl text-white shadow-md shadow-green-900/15 transition-transform group-hover:scale-105 sm:size-12">
             🛒
           </span>
 
@@ -162,7 +162,7 @@ export function Header() {
               বাজার দর
             </span>
 
-            <span className="mt-1 block max-w-[190px] truncate text-[10px] font-medium text-slate-500 sm:max-w-none sm:text-xs">
+            <span className="mt-1 block max-w-47.5 truncate text-[10px] font-medium text-slate-500 sm:max-w-none sm:text-xs">
               {todayBn()}
             </span>
           </span>
@@ -269,7 +269,7 @@ export function Header() {
         aria-label="পণ্যের ক্যাটাগরি"
         className="border-t border-[#edf1eb] bg-white"
       >
-        <div className="container-page overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="container-page overflow-x-auto scrollbar-none [&::-webkit-scrollbar]:hidden">
           <div className="flex min-w-max items-center gap-1 py-2">
             {categories.map((category) => {
               const active =
