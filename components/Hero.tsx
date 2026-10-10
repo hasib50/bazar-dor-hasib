@@ -76,7 +76,7 @@ export function Hero() {
 
 {/* Right banner image */}
 
-          <div className="relative mx-auto flex w-full max-w-[480px] items-center justify-center lg:max-w-none">
+          <div className="relative mx-auto flex w-full max-w-120 items-center justify-center lg:max-w-none">
             <div className="absolute inset-8 rounded-full bg-green-200/30 blur-2xl" />
 
             <Image
@@ -86,7 +86,7 @@ export function Hero() {
               height={500}
               priority
               sizes="(max-width: 1024px) 90vw, 42vw"
-              className="relative h-auto max-h-[280px] w-full object-contain sm:max-h-[340px] lg:max-h-[370px]"
+              className="relative h-auto max-h-70 w-full object-contain sm:max-h-85 lg:max-h-92.5"
             />
           </div>
         </div>
