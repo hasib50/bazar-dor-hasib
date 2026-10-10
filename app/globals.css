@@ -1,0 +1,85 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+@plugin "daisyui";
+
+:root {
+  --green: #078c3c;
+  --bg: #f4f8f3;
+  --ink: #1f2a22;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Hind Siliguri", sans-serif;
+}
+
+a {
+  text-decoration: none;
+}
+
+.container-page {
+  width: min(1120px, calc(100% - 32px));
+  margin-inline: auto;
+}
+
+.card-soft {
+  border: 1px solid #dfe8df;
+  background: rgba(255, 255, 255, 0.82);
+  border-radius: 18px;
+}
+
+.btn-green {
+  background: var(--green);
+  color: white;
+  border-radius: 9px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.16);
+}
+
+.btn-green:hover {
+  background: #067b35;
+}
+
+.ticker-track {
+  width: max-content;
+  animation: ticker 32s linear infinite;
+}
+
+@keyframes ticker {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #e8eee8 25%,
+    #f5f8f5 37%,
+    #e8eee8 63%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
