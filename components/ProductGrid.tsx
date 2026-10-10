@@ -1,4 +1,3 @@
-
 import type { Product } from "@/types";
 import { ProductCard } from "@/components/ProductCard";
 
