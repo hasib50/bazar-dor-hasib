@@ -118,26 +118,28 @@ export function AuthForm({
     }
   }
 
+  
   async function social(provider: "google" | "github") {
     setLoading(true);
 
     try {
       const result = await authClient.signIn.social({
         provider,
-        callbackURL: "/",
+        callbackURL: `/?socialLogin=success&provider=${provider}`,
       });
 
       if (result.error) {
         toast.error(
-          "এই social login-এর credentials এখনো সেট করা হয়নি"
+          result.error.message || `${provider} login ব্যর্থ হয়েছে`
         );
+        setLoading(false);
       }
     } catch {
-      toast.error("Social login এখনো configure করা হয়নি");
-    } finally {
+      toast.error("Social login শুরু করা যায়নি। আবার চেষ্টা করুন।");
       setLoading(false);
     }
   }
+
 
   const inputClass =
     "mt-1.5 h-10 w-full rounded-lg border border-[#dfe7e0] bg-transparent px-3 text-sm text-[#26332b] outline-none transition focus:border-[#078b43] focus:ring-2 focus:ring-[#078b43]/10";

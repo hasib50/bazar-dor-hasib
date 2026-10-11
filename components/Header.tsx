@@ -109,6 +109,28 @@ export function Header() {
   const router = useRouter();
 
   const { data: session, isPending } = authClient.useSession();
+  
+  useEffect(() => {
+    if (isPending || !session) return;
+
+    const params = new URLSearchParams(window.location.search);
+    const socialLogin = params.get("socialLogin");
+    const provider = params.get("provider");
+
+    if (socialLogin !== "success") return;
+
+    if (provider === "google" || provider === "github") {
+      toast.success(
+        provider === "google"
+          ? "Google দিয়ে সফলভাবে সাইন ইন হয়েছে"
+          : "GitHub দিয়ে সফলভাবে সাইন ইন হয়েছে"
+      );
+
+      // Remove the success marker so refreshing won't show it again.
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, [session, isPending]);
+
 
   const [dateText, setDateText] = useState("");
   const [categories, setCategories] =
